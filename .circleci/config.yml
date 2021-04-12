@@ -366,8 +366,6 @@ jobs:
           command: |
             cd backend
             cp package* /home/circleci/project/backend/dist
-    #       cd /home/circleci/project/backend/dist
-    #       tar -czvf /home/udapeople.tar.gz ./*
             cd /home/circleci/project/backend
             tar -czf /home/backend.tar.gz ./*
             pwd
