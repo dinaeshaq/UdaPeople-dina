@@ -1,4 +1,22 @@
 ---
+
+- name: Create directory
+  file:
+    path: ~/backend
+    state: directory
+    
+- name: Copy files
+  become: true
+  copy:
+    src: /home/backend.tar.gz
+    dest: /home/ubuntu/backend.tar.gz
+
+- name: Unarchive udapeople.tar.gz
+  unarchive:
+    src: /home/ubuntu/backend.tar.gz
+    dest: ~/backend/
+    remote_src: yes
+
 - name: "upgrade packages."
   become: true
   apt:
@@ -19,32 +37,23 @@
     production: yes
     state: present
 
-- name: "copy files "
-  become: true
-  copy:
-    src: /root/project/backend
-    dest: /home/ubuntu
-
 - name: Install Node modules
   become: true
   shell: |
     cd /home/ubuntu/backend
     npm install
     npm install --only=dev
-
 - name: "show files"
   become: true
   shell: | 
     ls -la /home/ubuntu
     ls -la /home/ubuntu/backend
-
 - name: "Building backend service"
   become: true
   shell: |
     cd /home/ubuntu/backend
     npm run build
     npm run prestart:prod
-
 - name: Executing node
   become: true
   shell: |
@@ -56,4 +65,4 @@
   become: no
   shell: pm2 start main.js
   args:
-    chdir: /home/ubuntu/backend/dist
+    chdir: /home/ubuntu/backend/dist    
