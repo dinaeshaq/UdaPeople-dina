@@ -30,7 +30,7 @@
   shell: |
     cd /home/ubuntu/backend
     npm install
-#   npm install --only=dev
+    npm install --only=dev
 - name: "show files"
   become: true
   shell: | 
