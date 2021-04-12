@@ -352,11 +352,17 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --no-cache 
+            apk add --no-cache \
+                python3 \
+                py3-pip \
+                curl \
+                nodejs \
+                npm \
+            && pip3 install --upgrade pip \
+            && pip3 install \
+                awscli \
+            && rm -rf /var/cache/apk/*
             apk add --update ansible
-            apk add jq tar gzip git curl nodejs npm
-            apk add rm -rf /var/cache/apk/*
-            apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
       - attach_workspace:
           at: ~/
       - add_ssh_keys:
