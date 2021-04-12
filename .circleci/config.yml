@@ -226,6 +226,15 @@ jobs:
               --tags project=udapeople type=backend\
               --stack-name "backend-stack-${CIRCLE_WORKFLOW_ID}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"
+      
+      - run:
+          name: Clean Inventory File.
+   #            remove inventory file and recreate it to let it contain only the Current Instance ip.      
+          command: |
+            rm .circleci/ansible/inventory.txt  
+            echo "[web]" > .circleci/ansible/inventory.txt
+      
+      
       - run:
           name: Add back-end ip to ansible inventory
           command: |
