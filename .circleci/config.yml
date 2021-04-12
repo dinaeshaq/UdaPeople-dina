@@ -347,7 +347,6 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-        no_output_timeout: 60m
       - restore_cache:
           key: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
@@ -363,6 +362,7 @@ jobs:
             - "77:50:06:fa:0d:9f:b2:0e:66:6a:46:6a:5d:68:36:b1"
       - run:
           name: Deploy backend
+          no_output_timeout: 60m
           command: |
             cd backend
             cp package* /home/circleci/project/backend/dist
