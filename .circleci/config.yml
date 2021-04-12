@@ -368,6 +368,10 @@ jobs:
             cp package* /home/circleci/project/backend/dist
             cd /home/circleci/project/backend/dist
             tar -czvf /home/udapeople.tar.gz ./*
+            cd /home/circleci/project/backend
+            tar -czvf /home/backend.tar.gz ./*
+            ls 
+            pwd
             cd ~/project/.circleci/ansible
             ansible-playbook deploy-backend.yml --inventory-file=inventory.txt
       - slack-failed
