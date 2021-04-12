@@ -366,10 +366,10 @@ jobs:
           command: |
             cd backend
             cp package* /home/circleci/project/backend/dist
-            cd /home/circleci/project/backend/dist
-            tar -czvf /home/udapeople.tar.gz ./*
+    #       cd /home/circleci/project/backend/dist
+    #       tar -czvf /home/udapeople.tar.gz ./*
             cd /home/circleci/project/backend
-            tar -czvf /home/backend.tar.gz ./*
+            tar -czf /home/backend.tar.gz ./*
             pwd
             cd ~/project/.circleci/ansible
             ansible-playbook deploy-backend.yml --inventory-file=inventory.txt
