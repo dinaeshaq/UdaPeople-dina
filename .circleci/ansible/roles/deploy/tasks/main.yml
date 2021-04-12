@@ -1,22 +1,4 @@
 ---
-
-- name: Create directory
-  file:
-    path: ~/backend
-    state: directory
-    
-- name: Copy files
-  become: true
-  copy:
-    src: /home/backend.tar.gz
-    dest: /home/ubuntu/backend.tar.gz
-
-- name: Unarchive udapeople.tar.gz
-  unarchive:
-    src: /home/ubuntu/backend.tar.gz
-    dest: ~/backend/
-    remote_src: yes
-
 - name: "upgrade packages."
   become: true
   apt:
@@ -36,6 +18,12 @@
     global: yes
     production: yes
     state: present
+
+- name: "copy files "
+  become: true
+  copy:
+    src: /root/project/backend
+    dest: /home/ubuntu
 
 - name: Install Node modules
   become: true
