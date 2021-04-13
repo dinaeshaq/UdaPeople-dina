@@ -13,57 +13,56 @@ parameters:
 
 commands:
 
-  create-env-file:
-    description: Create .env file
-    steps:
-      - run:
-          name: Create .env file
-          when: always
-          command: |
-            touch backend/.env
-            echo ENVIRONMENT=production > "backend/.env"
-            echo NODE_ENV=production >> "backend/.env"
-            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "backend/.env"
-            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "backend/.env"
-            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> "backend/.env"
-            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend/.env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
-            cat backend/.env
+  # create-env-file:
+  #   description: Create .env file
+  #   steps:
+  #     - run:
+  #         name: Create .env file
+  #         when: always
+  #         command: |
+  #           touch backend/.env
+  #           echo ENVIRONMENT=production > "backend/.env"
+  #           echo NODE_ENV=production >> "backend/.env"
+  #           echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "backend/.env"
+  #           echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "backend/.env"
+  #           echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> "backend/.env"
+  #           echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend/.env"
+  #           echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
+  #           echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
+  #           echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
+  #           echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
+  #           echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
+  #           cat backend/.env
 
-  create-bash-profile-file:
-    description: Create .bash_profile file
-    steps:
-      - run:
-          name: Create .bash_profile file
-          when: always
-          command: |
-            touch /home/.bash
-            echo "export ENVIRONMENT=production" > "/home/.bash"
-            echo "export TYPEORM_CONNECTION=$TYPEORM_CONNECTION" >> "/home/.bash"
-            echo "export TYPEORM_ENTITIES=$TYPEORM_ENTITIES" >> "/home/.bash"
-            echo "export TYPEORM_HOST=$TYPEORM_HOST" >> "/home/.bash"
-            echo "export TYPEORM_PORT=$TYPEORM_PORT" >> "/home/.bash"
-            echo "export TYPEORM_USERNAME=$TYPEORM_USERNAME" >> "/home/.bash"
-            echo "export TYPEORM_PASSWORD=$TYPEORM_PASSWORD" >> "/home/.bash"
-            echo "export TYPEORM_DATABASE=$TYPEORM_DATABASE" >> "/home/.bash"
+  # create-bash-profile-file:
+  #   description: Create .bash_profile file
+  #   steps:
+  #     - run:
+  #         name: Create .bash_profile file
+  #         when: always
+  #         command: |
+  #           touch /home/.bash
+  #           echo "export ENVIRONMENT=production" > "/home/.bash"
+  #           echo "export TYPEORM_CONNECTION=$TYPEORM_CONNECTION" >> "/home/.bash"
+  #           echo "export TYPEORM_ENTITIES=$TYPEORM_ENTITIES" >> "/home/.bash"
+  #           echo "export TYPEORM_HOST=$TYPEORM_HOST" >> "/home/.bash"
+  #           echo "export TYPEORM_PORT=$TYPEORM_PORT" >> "/home/.bash"
+  #           echo "export TYPEORM_USERNAME=$TYPEORM_USERNAME" >> "/home/.bash"
+  #           echo "export TYPEORM_PASSWORD=$TYPEORM_PASSWORD" >> "/home/.bash"
+  #           echo "export TYPEORM_DATABASE=$TYPEORM_DATABASE" >> "/home/.bash"
 
-  host-authenticity-bypass:
-    description: Avoid unknown hosts
-    steps:
-      - run:
-          name: Host authenticity bypass
-          when: always
-          command: |
-            echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+  # host-authenticity-bypass:
+  #   description: Avoid unknown hosts
+  #   steps:
+  #     - run:
+  #         name: Host authenticity bypass
+  #         when: always
+  #         command: |
+  #           echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
 
   slack-failed:
     description: Send notification to Slack if failed
     steps:
-      
       - slack/notify:
           channel: devops
           event: fail
