@@ -69,27 +69,33 @@ commands:
           # message: Fail  message to notify the channel about the latest build #
           template: basic_fail_1
 
+  
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      workflow_id:
+      backend-infra:
         type: string
+        default: backend-${CIRCLE_WORKFLOW_ID}
+      frontend-infra:
+        type: string
+        default: frontend-${CIRCLE_WORKFLOW_ID}
+      s3-bucket:
+        type: string
+        default: udapeople-frontend-${CIRCLE_WORKFLOW_ID}
     steps:
       - run:
           name: Destroy environments
-          no_output_timeout: 30m
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-frontend-${CIRCLE_WORKFLOW_ID} --recursive
-            echo backend-${CIRCLE_WORKFLOW_ID}
-            aws cloudformation delete-stack --stack-name backend-${CIRCLE_WORKFLOW_ID}
-            echo frontend-${CIRCLE_WORKFLOW_ID}
-            aws cloudformation delete-stack --stack-name frontend-${CIRCLE_WORKFLOW_ID}
-            echo udapeople-frontend-${CIRCLE_WORKFLOW_ID}
-            #exit 1
+            aws s3 rm s3://<< parameters.s3-bucket >> --recursive
+            aws cloudformation delete-stack --stack-name << parameters.backend-infra >>
+            aws cloudformation delete-stack --stack-name << parameters.frontend-infra >>
+            exit 0
 
-  
-    
+
+
+
+
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     steps:
@@ -255,8 +261,8 @@ jobs:
           root: .circleci/ansible
           paths:
             - inventory.txt
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - destroy-environment
+      #    workflow_id: ${CIRCLE_WORKFLOW_ID}
 
   configure-infrastructure:
     docker:
@@ -283,8 +289,8 @@ jobs:
           command: |
             cat /tmp/.circleci/ansible/inventory.txt
             ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - destroy-environment
+        #  workflow_id: ${CIRCLE_WORKFLOW_ID}
 
   run-migrations:
     docker:
@@ -323,8 +329,8 @@ jobs:
             then curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}; \
             echo "1"
             fi
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - destroy-environment
+        #  workflow_id: ${CIRCLE_WORKFLOW_ID}
       - revert-migrations
         #  workflow_id: ${CIRCLE_WORKFLOW_ID}
 
@@ -399,8 +405,8 @@ jobs:
             cat /tmp/.circleci/ansible/inventory.txt
             ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
             ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/prometheus.yml
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - destroy-environment
+        #  workflow_id: ${CIRCLE_WORKFLOW_ID}
       - revert-migrations
         #  workflow_id: ${CIRCLE_WORKFLOW_ID}
 
@@ -434,8 +440,8 @@ jobs:
               else
                 exit
               fi
-      - destroy-environment:
-          workflow_id:
+      - destroy-environment
+        #  workflow_id:
       - revert-migrations
         #  workflow_id: ${CIRCLE_WORKFLOW_ID}
 
