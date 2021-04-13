@@ -223,8 +223,12 @@ jobs:
               #exit 1
       - run:
           name: store URL
+
+        # Query only the Ec2 instance which is currently createted using "backend-backend-${CIRCLE_WORKFLOW_ID}"  as a query key , other wise it will get all the Ec2 instance ip and store in inventory.txt wich
+        # will overwrite all the Ec2 infra if ansible playbook got all the Ec2 ips
+
           command: |
-            BACKEND_IP=$(aws ec2 describe-instances --region us-west-2 --query "Reservations[*].Instances[*].PublicIpAddress" --filters "Name=tag:Name,Values=backend-*" --output text)
+            BACKEND_IP=$(aws ec2 describe-instances --region us-west-2 --query "Reservations[*].Instances[*].PublicIpAddress" --filters "Name=tag:Name,Values=backend-backend-${CIRCLE_WORKFLOW_ID}" --output text)
             echo "BACKEND_IP=$BACKEND_IP"
             echo ${CIRCLE_WORKFLOW_ID}
             curl -H "Content-Type: text/plain" -H "token: << pipeline.parameters.memstash-token >>" --request PUT --data "$BACKEND_IP" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID}
@@ -238,12 +242,15 @@ jobs:
             yum -y install tar gzip
       - run:
           name: Add back-end ip to ansible inventory
+          # clears the inventory file to have only the existing instances
+          # Query only the Ec2 instance which is currently createted using "backend-backend-${CIRCLE_WORKFLOW_ID}"  as a query key , other wise it will get all the Ec2 instance ip and store in inventory.txt wich
+          # will overwrite all the Ec2 infra if ansible playbook got all the Ec2 ips
           command: |
-            rm .circleci/ansible/inventory.txt # clears the inventory file to have only the existing instances
+            rm .circleci/ansible/inventory.txt 
             echo "[web]" > .circleci/ansible/inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=udacity" \
+              --filters "Name=tag:Name,Values=backend-backend-${CIRCLE_WORKFLOW_ID}" \
               --output text >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
             ls ~/
