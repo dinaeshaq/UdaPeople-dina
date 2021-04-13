@@ -31,17 +31,20 @@
     cd /home/ubuntu/backend
     npm install
     npm install --only=dev
+
 - name: "show files"
   become: true
   shell: | 
     ls -la /home/ubuntu
     ls -la /home/ubuntu/backend
+
 - name: "Building backend service"
   become: true
   shell: |
     cd /home/ubuntu/backend
     npm run build
     npm run prestart:prod
+
 - name: Executing node
   become: true
   shell: |
@@ -53,4 +56,4 @@
   become: no
   shell: pm2 start main.js
   args:
-    chdir: /home/ubuntu/backend/dist    
+    chdir: /home/ubuntu/backend/dist
