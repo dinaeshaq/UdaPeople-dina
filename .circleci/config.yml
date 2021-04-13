@@ -95,7 +95,7 @@ commands:
         type: string
     steps:
       - run:
-          name: Revert migrations
+          name: revert-migrations
           when: on_fail
           # Add when this will run
           command: |
