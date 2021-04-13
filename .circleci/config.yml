@@ -88,28 +88,25 @@ commands:
             echo udapeople-frontend-${CIRCLE_WORKFLOW_ID}
             #exit 1
 
+  
+    
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
-    parameters:
-      workflow_id:
-        type: string
     steps:
+      - restore_cache:
+          key: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
-          name: revert-migrations
+          name: Revert migrations
           when: on_fail
-          # Add when this will run
           command: |
-            SUCCESS=$(curl -H "token: << pipeline.parameters.memstash-token >>" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID})
-            echo $SUCCESS
-            if(( SUCCESS==1 )); 
+            SUCCESS=`curl -H "token: << pipeline.parameters.memstash-token >>" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}`
+            if (( $SUCCESS==1 ))
             then
-              pwd
-              ls
-              cd backend
+              cd ~/project/backend
               npm install
               npm run migrations:revert
-              exit 1
             fi
+
 
 jobs:
   build-frontend:
@@ -118,7 +115,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: frontend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
           name:
           command: |
@@ -128,7 +125,7 @@ jobs:
 
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build
+          key: frontend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }} 
       - slack-failed
 
   build-backend:
@@ -137,7 +134,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
           name: Build backend
           command: |
@@ -147,7 +144,7 @@ jobs:
             npm run build
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-build
+          key: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - slack-failed
   test-frontend:
     docker:
@@ -155,7 +152,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: frontend-build
+          keys: frontend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
           name: Run front end tests
           command: |
@@ -172,7 +169,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: backend-build
+          keys: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
           name: Run back end tests
           command: |
@@ -186,7 +183,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: frontend-build
+          keys: frontend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
           name: Run front end audit
           command: |
@@ -201,7 +198,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: backend-build
+          keys: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
       - run:
           name: Run back end audit
           command: |
@@ -328,8 +325,8 @@ jobs:
             fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID}
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - revert-migrations
+        #  workflow_id: ${CIRCLE_WORKFLOW_ID}
 
   deploy-frontend:
     docker:
@@ -404,8 +401,8 @@ jobs:
             ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/prometheus.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID}
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - revert-migrations
+        #  workflow_id: ${CIRCLE_WORKFLOW_ID}
 
   smoke-test:
     docker:
@@ -439,8 +436,8 @@ jobs:
               fi
       - destroy-environment:
           workflow_id:
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID}
+      - revert-migrations
+        #  workflow_id: ${CIRCLE_WORKFLOW_ID}
 
   cloudfront-update:
     docker:
