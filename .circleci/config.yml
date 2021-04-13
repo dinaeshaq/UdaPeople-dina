@@ -12,15 +12,6 @@ parameters:
     default: us-west-2
 
 commands:
-  extract-commit-message:
-    description: Extract commit message
-    steps:
-      - run:
-          name: Extract commit message
-          when: always
-          command: |
-            echo "export COMMIT_MESSAGE=\"$(git log --format=%B -n 1 $CIRCLE_SHA1)\"" >> $BASH_ENV
-            source $BASH_ENV
 
   create-env-file:
     description: Create .env file
@@ -72,7 +63,7 @@ commands:
   slack-failed:
     description: Send notification to Slack if failed
     steps:
-      - extract-commmit-message
+      
       - slack/notify:
           channel: devops
           event: fail
