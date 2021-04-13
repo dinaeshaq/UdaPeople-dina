@@ -229,7 +229,7 @@ jobs:
       
       - run:
           name: Clean Inventory File.
-   #            remove inventory file and recreate it to let it contain only the Current Instance ip.      
+   ##            remove inventory file and recreate it to let it contain only the Current Instance ip.      
           command: |
             rm .circleci/ansible/inventory.txt  
             echo "[web]" > .circleci/ansible/inventory.txt
