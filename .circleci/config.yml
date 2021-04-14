@@ -149,7 +149,7 @@ jobs:
           key: backend-build
       - slack-failed
 
-      
+
   test-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -433,7 +433,7 @@ jobs:
           command: |
             URL="http://udapeople-frontend-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
             echo $URL
-            if curl -s ${URL} | grep "welcome"
+            if curl -s ${URL} | grep "Welcome"
               then
                 exit
               else
@@ -519,7 +519,7 @@ workflows:
       - scan-frontend:
           requires: [build-frontend]
       - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend, build-backend, build-frontend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]
