@@ -443,9 +443,9 @@ jobs:
       - destroy-environment
       - revert-migrations
       
-
+# Create First the CloudFront just one time then we will not use- and disable it.
   
-  cloudfront-update:
+  cloudfront-create:
     docker:
       - image: python:3.7-alpine3.11
     steps:
@@ -462,6 +462,30 @@ jobs:
       - slack-failed
       - revert-migrations
       - destroy-environment
+
+# Cloundfront update its the step which we will use every time we need to promote The Green To become Blue bases on the 
+# previous created CloudFormation Template.
+  
+  cloudfront-update:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum -y install tar gzip jq git
+      - run:
+          name: Update cloudfront distribution
+          command: |
+            aws cloudformation update-stack \
+              --stack-name udapeople-cloudfront \
+              --use-previous-template \
+              --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID}
+      - slack-failed
+      - revert-migrations
+      - destroy-environment
+
 
 
   cleanup:
@@ -515,7 +539,9 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
+      - cloudfront-create:
+          requires: [smoke-test]    
       - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+          requires: [cloudfront-create]
+      #- cleanup:
+      #    requires: [cloudfront-update]
