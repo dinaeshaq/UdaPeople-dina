@@ -457,7 +457,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --tags project=udacity \
-              --stack-name udapeople-cloudfront-${CIRCLE_WORKFLOW_ID} \
+              --stack-name udapeople-cloudfront \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}"
       - slack-failed
       - revert-migrations
