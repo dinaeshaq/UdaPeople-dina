@@ -431,10 +431,10 @@ jobs:
             curl -Is http://${BACKEND_IP}:3030/api/status | head -n 1
       - run:
           name: Frontend smoke test.
+          #semuilate Smoke Test Failure by changing the W to w at Welcom .
           command: |
             URL="http://udapeople-frontend-${CIRCLE_WORKFLOW_ID}.s3-website-us-west-2.amazonaws.com"
             echo $URL
-#semuilate Smoke Test Failure by changing the W to w at Welcom .            
             if curl -s ${URL} | grep "welcome"
               then
                 exit
