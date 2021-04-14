@@ -100,7 +100,7 @@ commands:
     description: Revert the last migration if successfully run in the current workflow.
     steps:
       - restore_cache:
-          key: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          key: backend-build
       - run:
           name: Revert migrations
           when: on_fail
@@ -129,7 +129,7 @@ jobs:
 
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          key: frontend-build
       - slack-failed
 
   build-backend:
@@ -146,15 +146,17 @@ jobs:
             npm run build
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          key: backend-build
       - slack-failed
+
+      
   test-frontend:
     docker:
       - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
-          keys: frontend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          keys: frontend-build
       - run:
           name: Run front end tests
           command: |
@@ -172,7 +174,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          keys: backend-build
       - run:
           name: Run back end tests
           command: |
@@ -186,7 +188,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: frontend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          keys: frontend-build
       - run:
           name: Run front end audit
           command: |
@@ -201,7 +203,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: backend-build-{{ .Environment.CIRCLE_WORKFLOW_ID }}
+          keys: backend-build
       - run:
           name: Run back end audit
           command: |
