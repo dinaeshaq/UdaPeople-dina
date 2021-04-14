@@ -445,7 +445,7 @@ jobs:
       
 
   
-  cloudfront-create:
+  cloudfront-update:
     docker:
       - image: python:3.7-alpine3.11
     steps:
@@ -460,29 +460,9 @@ jobs:
               --stack-name udapeople-cloudfront-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}"
       - slack-failed
-
-
-
-
-  cloudfront-update:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            yum -y install tar gzip jq git
-      - run:
-          name: Update cloudfront distribution
-          command: |
-            aws cloudformation update-stack \
-              --stack-name udapeople-cloudfront-${CIRCLE_WORKFLOW_ID} \
-              --use-previous-template \
-              --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID}
-      - slack-failed
       - revert-migrations
       - destroy-environment
+
 
   cleanup:
     docker:
@@ -504,7 +484,9 @@ jobs:
               aws cloudformation delete-stack --stack-name frontend-${OldWorkflowID}
 
             fi
-      - slack-failed      
+      - slack-failed
+
+
 workflows:
   default:
     jobs:
