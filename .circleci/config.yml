@@ -477,7 +477,14 @@ jobs:
             yum -y install tar gzip jq git
       - run:
           name: Update cloudfront distribution
+          # save OldWorkflowID Value which got during Quiry against Cloundfront previously created Exporter , at memstash To use it later 
+          # Before Update the Cloudfront update Value , so it will use also in cleaning process 
+          # where we will delete the stack that belong to that value .  
           command: |
+            export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
+            curl -H "Content-Type: text/plain" -H "token: << pipeline.parameters.memstash-token >>" --request PUT --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID}
+            echo OldWorkflowID =$OldWorkflowID
+
             aws cloudformation update-stack \
               --stack-name udapeople-cloudfront \
               --use-previous-template \
@@ -495,8 +502,15 @@ jobs:
       - checkout
       - run:
           name: Get old stack workflow id and Remove old stacks and files
+          # retrive the stored OldWorkflowID of the Old satck that we stored breviously at "memstash" so we can delete its belongs stack after   
+          # The Green stack successfully passed the Smoke-Teset and become up and works , so we should delet the old stack to save our cost ,
+          # and get the christmas bonus :).
+           
+        
           command: |
-            export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
+            export OldWorkflowID=$(curl -H "token: << pipeline.parameters.memstash-token >>" --request GET https://api.memstash.io/values/OldWorkflowID})
+            echo OldWorkflowID=$OldWorkflowID
+
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             echo $OldWorkflowID
             echo $STACKS
@@ -539,9 +553,9 @@ workflows:
           requires: [run-migrations]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
-     #- cloudfront-create:
-     #    requires: [smoke-test]    
-      - cloudfront-update:
-          requires: [smoke-test]
-      #- cleanup:
-      #    requires: [cloudfront-update]
+      - cloudfront-create:
+         requires: [smoke-test]    
+     #- cloudfront-update:
+     #   requires: [smoke-test]
+     #- cleanup:
+     #   requires: [cloudfront-update]
