@@ -484,9 +484,9 @@ jobs:
             export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
             echo OldWorkflowID =$OldWorkflowID
             curl -H "Content-Type: text/plain" -H "token:<< pipeline.parameters.memstash-token >>" --request PUT --data "$OldWorkflowID" https://api.memstash.io/values/OldWorkflowID
-            export OldWorkflowID-memstash=$(curl -H "token: << pipeline.parameters.memstash-token >>" --request GET https://api.memstash.io/values/OldWorkflowID)
-            echo OldWorkflowID-memstash=$OldWorkflowID-memstash
-               
+            export OldWorkflowIDmemstash=$(curl -H "token: << pipeline.parameters.memstash-token >>" --request GET https://api.memstash.io/values/OldWorkflowID)
+            echo OldWorkflowIDmemstash=$OldWorkflowIDmemstash
+
             aws cloudformation update-stack \
               --stack-name udapeople-cloudfront \
               --use-previous-template \
