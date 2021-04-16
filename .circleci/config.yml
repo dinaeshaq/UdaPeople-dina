@@ -459,9 +459,9 @@ jobs:
               --tags project=udacity \
               --stack-name udapeople-cloudfront \
               --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}"
-      - slack-failed
-      - revert-migrations
-      - destroy-environment
+     # - slack-failed
+     # - revert-migrations
+     # - destroy-environment
 
 # Cloundfront update its the step which we will use every time we need to promote The Green To become Blue bases on the 
 # previous created CloudFormation Template.
