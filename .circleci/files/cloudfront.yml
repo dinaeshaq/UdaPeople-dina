@@ -23,7 +23,7 @@ Resources:
           - DomainName: !Sub "udapeople-frontend-${WorkflowID}.s3-website-us-west-2.amazonaws.com"
             Id: webpage
             #S3OriginConfig:
-            #  OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
+            OriginAccessIdentity: dodo-test
         Enabled: True
         DefaultRootObject: index.html
         DefaultCacheBehavior:
